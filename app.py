@@ -274,35 +274,6 @@ def set_new_value(message, note, option):
         bot.reply_to(message, 'Whoops! Something is wrong, try again')
 
 
-@bot.message_handler(commands=['assign'])
-def assign_task(message):
-    msg = bot.reply_to(message, 'Choose task you want to assign to someone')
-    bot.register_next_step_handler(msg, process_assignment)
-
-
-@cancel
-def process_assignment(message):
-    msg = bot.reply_to(message, 'OK! Now send me Telegram ID of your assignee')
-    bot.register_next_step_handler(msg, process_assignee, assigned_task=message.text)
-
-
-@cancel
-def process_assignee(message, assigned_task):
-    uid = message.chat.id
-    assignee = message.text
-    if not find_user(uid=assignee):
-        bot.reply_to(message, 'There is no such user')
-        return
-    elif uid == assignee:
-        bot.reply_to(message,
-                     'You can not assign a task for yourself. Instead use /add')
-        return
-    make_assignee(uid=uid, note=assigned_task, assignee=message.text)
-    bot.send_message(message.text,
-                     f'You have new task: "{assigned_task}" from user id{uid}')
-    bot.reply_to(message, 'Assigned')
-
-
 @bot.message_handler(commands=['style'])
 def change_style(message):
     state = style(uid=message.chat.id)
